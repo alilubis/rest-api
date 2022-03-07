@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RestAPI.Entities.DBContext;
+using RestAPI.Interfaces;
 using RestAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<BusMealDBContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("BusMealConnection"));
 });
+builder.Services.AddSingleton<IMemoryStuffsRepository, MemoryStuffsRepository>();
 builder.Services.AddTransient<DepartmentRepository>(); 
 var app = builder.Build();
 

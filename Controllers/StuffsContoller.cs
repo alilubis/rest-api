@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using RestAPI.Dtos;
 using RestAPI.Entities;
-using RestAPI.Repositories;
+using RestAPI.Interfaces;
 
 namespace RestAPI.Controllers
 {
@@ -8,22 +9,23 @@ namespace RestAPI.Controllers
     [Route("stuff")] // GET / stuff
     public class StuffsContoller : ControllerBase
     {
-        private readonly MemoryStuffsRepository repository;
+        private readonly IMemoryStuffsRepository repository;
 
-        public StuffsContoller()
+        public StuffsContoller(IMemoryStuffsRepository repository)
         {
-            repository = new MemoryStuffsRepository();
+            this.repository = repository;
         }
 
         [HttpGet] // Get / stuff
-        public IEnumerable<Stuff> GetStuffs()
+        public IEnumerable<StuffDto> GetStuffs()
         {
-            var stuffs = repository.GetStuffs();
+            var stuffs = repository.GetStuffs()
+                .Select(stuff => stuff.AsDto());
             return stuffs;
         }
 
         [HttpGet("{id}")] // Get / stuff {id}
-        public ActionResult<Stuff> GetStuff(Guid id)
+        public ActionResult<StuffDto> GetStuff(Guid id)
         {
             var stuff = repository.GetStuff(id);
 
@@ -32,7 +34,7 @@ namespace RestAPI.Controllers
                 return NotFound();
             }
 
-            return Ok(stuff);
+            return stuff.AsDto();
         }
     }
 }
